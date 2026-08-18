@@ -1,0 +1,13 @@
+export type DiffPiece = { kind: "equal" | "insertion" | "deletion" | "substitution"; expected: string | null; actual: string | null };
+export type Rating = "again" | "hard" | "good" | "easy";
+export type ImportDraft = { id: string; month: number; year: number; reference: string; englishText: string; chineseText: string; translation: string; pageNumber: number; sourceFilename: string; confidence: number; warning?: string };
+export type ReviewRecord = { id: string; verseID: string; language: "en" | "zh"; stage: "new" | "learning" | "reviewing" | "mastered"; nextReviewDate: string; intervalIndex: number; successfulRetrievals: number; successfulDays: number; initialLearningDate?: string; lastSuccessDate?: string; lastPracticedDate?: string };
+export function normalizeText(text: string, language?: "en" | "zh", ignorePunctuation?: boolean): string[];
+export function compareText(expected: string, actual: string, language?: "en" | "zh", ignorePunctuation?: boolean): { score: number; pieces: DiffPiece[]; errorCount: number; reordered: boolean };
+export function duplicateKey(reference: string, translation: string, text: string): string;
+export function findReferences(text: string): { reference: string; index: number; end: number }[];
+export function parseVersePages(pages: { pageNumber: number; text: string; scanned?: boolean }[], filename: string, now?: Date): ImportDraft[];
+export function scheduleReview(review: ReviewRecord, rating: Rating, options?: { date?: Date; score?: number; cued?: boolean }): ReviewRecord;
+export function clozeText(text: string, level?: number, language?: "en" | "zh"): string;
+export const REVIEW_INTERVALS: number[];
+export const INITIAL_SUCCESS_CRITERION: number;
