@@ -29,7 +29,11 @@ export function RecitationApp() {
   const [practiceVerse, setPracticeVerse] = useState<VerseRecord | null>(null); const [toast, setToast] = useState("");
   useEffect(() => { loadDocument().then((data) => { setDocument(data); setLoaded(true); }).catch(() => { setLoaded(true); setToast("Local storage could not be opened. Changes may not persist."); }); }, []);
   useEffect(() => { if (loaded) saveDocument(document).catch(() => setToast("Could not save on this device.")); }, [document, loaded]);
-  useEffect(() => { if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => undefined); }, []);
+  useEffect(() => {
+    if (!("serviceWorker" in navigator)) return;
+    const baseURL = document.querySelector("base")?.href ?? new URL(".", window.location.href).href;
+    navigator.serviceWorker.register(new URL("sw.js", baseURL).pathname).catch(() => undefined);
+  }, []);
   useEffect(() => { if (!toast) return; const timer = window.setTimeout(() => setToast(""), 4200); return () => window.clearTimeout(timer); }, [toast]);
 
   const ui = document.settings.uiLanguage === "zh" ? labels.zh : labels.en;
