@@ -2,7 +2,11 @@ export const REVIEW_INTERVALS = [1, 3, 7, 14, 30];
 export const INITIAL_SUCCESS_CRITERION = 3;
 
 export function normalizeText(text, language = "en", ignorePunctuation = true) {
-  let value = String(text ?? "").normalize("NFKC").replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
+  let value = String(text ?? "")
+    .normalize("NFKC")
+    .replace(/\[[^\]]*\]/gu, " ")
+    .replace(/[‘’]/g, "'")
+    .replace(/[“”]/g, '"');
   if (language === "en") value = value.toLocaleLowerCase("en");
   if (ignorePunctuation) value = value.replace(/[\p{P}\p{S}]/gu, " ");
   if (language === "zh") return [...value.replace(/\s/gu, "")];
@@ -132,6 +136,13 @@ export function clozeText(text, level = 1, language = "en") {
 }
 
 export function suggestChunks(text) {
+  const verseMarkers = [...text.matchAll(/\b\d{1,3}:\d{1,3}\b/gu)];
+  if (verseMarkers.length > 1) {
+    const boundaries = verseMarkers.slice(1).map((match) => match.index);
+    return [0, ...boundaries]
+      .map((start, index, starts) => text.slice(start, starts[index + 1] ?? text.length).trim())
+      .filter(Boolean);
+  }
   return text
     .split(/(?:(?<=[,;.!?。；，！？])|(?<!\d:)(?<=:))\s*/u)
     .map((chunk) => chunk.trim())

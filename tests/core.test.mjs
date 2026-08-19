@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { clozeText, compareText, duplicateKey, findReferences, normalizeText, parseVersePages, scheduleReview, suggestChunks } from "../app/core.mjs";
 
 test("English normalization ignores case punctuation and repeated spacing", () => assert.deepEqual(normalizeText("  Keep,  These WORDS! ", "en"), ["keep","these","words"]));
+test("bracketed Bible comments are ignored during scoring", () => { assert.equal(compareText("Keep [editor note] these words", "Keep these words", "en").score, 100); assert.equal(compareText("你要［譯者註］保守你心", "你要保守你心", "zh").score, 100); });
 test("Chinese comparison works by character", () => assert.equal(compareText("你要保守你心", "你要保守心", "zh").pieces.some((p) => p.kind === "deletion"), true));
 test("English omissions additions and substitutions are identified", () => { const result = compareText("keep these words close", "keep those words very close", "en"); assert.ok(result.pieces.some((p) => p.kind === "substitution")); assert.ok(result.pieces.some((p) => p.kind === "insertion")); });
 test("Reordered words are flagged", () => assert.equal(compareText("words in heart", "heart in words", "en").reordered, true));
@@ -10,6 +11,7 @@ test("Mixed strings remain deterministic", () => assert.equal(compareText("Psalm
 test("Chinese initials reveal only the first character of each phrase", () => assert.equal(clozeText("你要專心仰賴耶和華，不可倚靠自己的聰明。", 3, "zh"), "你········，不········。"));
 test("English initials still reveal the first letter of each word", () => assert.equal(clozeText("Keep these words", 3, "en"), "K··· t···· w····"));
 test("phrase chunks keep chapter and verse numbers together", () => assert.deepEqual(suggestChunks("6:12 Verse twelve text. Next phrase!"), ["6:12 Verse twelve text.", "Next phrase!"]));
+test("multiple chapter and verse markers separate complete verses", () => assert.deepEqual(suggestChunks("6:12 First verse sentence. Another sentence. 6:13 Second verse sentence."), ["6:12 First verse sentence. Another sentence.", "6:13 Second verse sentence."]));
 test("English and Chinese references are parsed", () => { const refs = findReferences("Romans 12:2\nPlaceholder text\n羅馬書 12:2 測試文字"); assert.equal(refs.length, 2); });
 test("bilingual selectable PDF fixture becomes one editable record", () => { const drafts = parseVersePages([{pageNumber:1,text:"August 2026\nRomans 12:2\nInvented placeholder wording.\n這是自創的測試文字。",scanned:false}],"fixture.pdf",new Date(2026,7,1)); assert.equal(drafts.length,1); assert.equal(drafts[0].month,8); assert.ok(drafts[0].englishText); assert.ok(drafts[0].chineseText); });
 test("four and five verse monthly fixtures parse", () => { for (const count of [4,5]) { const text=Array.from({length:count},(_,i)=>`Romans 12:${i+1}\nInvented placeholder line ${i+1}.`).join("\n"); assert.equal(parseVersePages([{pageNumber:1,text}],"fixture.pdf").length,count); } });
