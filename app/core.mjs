@@ -130,3 +130,10 @@ export function clozeText(text, level = 1, language = "en") {
     return hidden ? "_____" : token;
   }).join(language === "zh" ? "" : "");
 }
+
+export function suggestChunks(text) {
+  return text
+    .split(/(?:(?<=[,;.!?。；，！？])|(?<!\d:)(?<=:))\s*/u)
+    .map((chunk) => chunk.trim())
+    .filter(Boolean);
+}

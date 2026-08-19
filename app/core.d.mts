@@ -9,5 +9,6 @@ export function findReferences(text: string): { reference: string; index: number
 export function parseVersePages(pages: { pageNumber: number; text: string; scanned?: boolean }[], filename: string, now?: Date): ImportDraft[];
 export function scheduleReview(review: ReviewRecord, rating: Rating, options?: { date?: Date; score?: number; cued?: boolean }): ReviewRecord;
 export function clozeText(text: string, level?: number, language?: "en" | "zh"): string;
+export function suggestChunks(text: string): string[];
 export const REVIEW_INTERVALS: number[];
 export const INITIAL_SUCCESS_CRITERION: number;
