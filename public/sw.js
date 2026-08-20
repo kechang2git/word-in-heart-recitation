@@ -1,4 +1,4 @@
-const CACHE = "word-in-heart-pages-v1";
+const CACHE = "word-in-heart-pages-v2";
 const BASE = new URL("./", self.registration.scope).pathname;
 const APP_SHELL = [BASE, `${BASE}manifest.webmanifest`, `${BASE}icon-192.png`, `${BASE}icon-512.png`];
 

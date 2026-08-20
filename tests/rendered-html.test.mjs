@@ -17,5 +17,5 @@ test("server renders Word in Heart metadata and app root", async () => {
 test("PWA manifest and service worker describe installable offline app", async () => {
   const [manifestText, worker] = await Promise.all([readFile(new URL("../public/manifest.webmanifest", import.meta.url), "utf8"), readFile(new URL("../public/sw.js", import.meta.url), "utf8")]);
   const manifest = JSON.parse(manifestText); assert.equal(manifest.display, "standalone"); assert.equal(manifest.start_url, "./"); assert.ok(manifest.icons.some((icon) => icon.sizes === "512x512"));
-  assert.match(worker, /word-in-heart-pages-v1/); assert.match(worker, /caches\.match/); assert.match(worker, /request\.mode === "navigate"/);
+  assert.match(worker, /word-in-heart-pages-v2/); assert.match(worker, /caches\.match/); assert.match(worker, /request\.mode === "navigate"/);
 });
